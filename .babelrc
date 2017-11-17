@@ -1,0 +1,16 @@
+{
+    "ignore": ["node_modules"],
+    "presets": [
+        "flow",
+        [
+            "env",
+            {
+                "modules": "commonjs",
+                "useBuiltIns": true,
+                "loose": true,
+                "debug": false
+            }
+        ],
+        "stage-0"
+    ]
+}

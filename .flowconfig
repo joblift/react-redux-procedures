@@ -1,0 +1,16 @@
+[ignore]
+.*/dist/.*
+
+[include]
+./
+
+[options]
+module.file_ext=.js
+module.file_ext=.json
+
+include_warnings=true
+experimental.const_params=true
+
+module.system.node.resolve_dirname=node_modules
+module.use_strict=true
+traces=5
