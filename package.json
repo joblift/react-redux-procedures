@@ -1,6 +1,6 @@
 {
     "name": "react-redux-procedures",
-    "version": "1.1.1-alpha",
+    "version": "1.1.2-alpha",
     "description": "A wrapper for react-redux's connect to allow execution of multiple actions in a single procedure",
     "main": "dist/index.js",
     "repository": "git@github.com:remhume/react-redux-procedures.git",
