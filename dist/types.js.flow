@@ -12,5 +12,5 @@ export type StatelessProcedure<P, R> = {
 };
 
 // eslint-disable-next-line
-type _ProcedureDispatcher<R, P, Pr: Procedure<*, P, R, *> | StatelessProcedure<P, R>> = (params: P) => R;
+type _ProcedureDispatcher<R, P, Pr: Procedure<any, P, R, any> | StatelessProcedure<P, R>> = (params: P) => R;
 export type ProcedureDispatcher<Pr> = _ProcedureDispatcher<*, *, Pr>;

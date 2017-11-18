@@ -28,7 +28,8 @@
     "scripts": {
         "build": "npm run build:babel && npm run build:flow",
         "build:babel": "babel src -d dist",
-        "build:flow": "flow-copy-source -v src dist"
+        "build:flow": "flow-copy-source -v src dist",
+        "prepublish": "npm run build"
     },
     "dependencies": {
         "react-redux": "^5.0.6",
