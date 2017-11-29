@@ -1,6 +1,6 @@
 // @flow
-import type { Procedure, StatelessProcedure } from "./types";
-import type { Dispatch } from "redux";
+/* :: import type { Dispatch } from 'redux' */
+import type { Procedure, StatelessProcedure } from './types';
 
 /* ::
 declare function createProcedure<
@@ -22,7 +22,7 @@ declare function createProcedure<X, P, R: Promise<X>, Pr: (dispatch: Dispatch<an
 */
 
 export default function createProcedure(procedure, mapStateToProcState) {
-    if (process.env.NODE_ENV === "test") {
+    if (process.env.NODE_ENV === 'test') {
         // This Monkey patches the procedure to write its return value to global.ProcReturn.
         // Only used for tests to wait for the promise result.
         /* eslint-disable */

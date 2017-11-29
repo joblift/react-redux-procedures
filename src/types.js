@@ -8,7 +8,7 @@ export type Procedure<S, P, R, AS> = {
 
 export type StatelessProcedure<P, R> = {
     (dispatch: Dispatch<any>): () => (params: P) => R,
-    mapStateToProcState?: any => any,
+    mapStateToProcState?: any => Object,
 };
 
 // eslint-disable-next-line
