@@ -1,30 +1,18 @@
 // @flow
 import { connect } from 'react-redux';
-import type { AppliedOnce, AppliedTwice, Procedure } from './types';
+import type { AppliedOnce, Procedure, ProcedureDispatcher } from './types';
 import type { ConnectOptions, MapDispatchToProps, MapStateToProps, MergeProps } from 'react-redux';
-import type { Dispatch } from 'redux';
 
-type InferredProcedure<SP, S> = Procedure<SP, *, *, S>;
-type GetState<Res, PA, SP, S, Pr: Procedure<SP, PA, Res, S>> = Pr => SP;
 type ApplyDispatch<Res, PA, SP, S, Pr: Procedure<SP, PA, Res, S>> = Pr => AppliedOnce<Res, PA, SP, S, Pr>;
-// type ApplyState<Res, PA, SP, S, Pr: Procedure<SP, PA, Res, S>> = (
-// AppliedOnce<Res, PA, SP, S, Pr>
-// ) => AppliedTwice<Res, PA, SP, S, Pr>;
-// eslint-disable-next-line
-export type MapProceduresToProps<PPO, PP> = PP;
+type MapToDispatcher<Pr: Procedure<*, *, *, *>> = Pr => ProcedureDispatcher<Pr>;
 
-const buildMapStateToProps = <
-    S,
-    OP: Object,
-    SP: Object,
-    PPO: Object,
-    PP: Object,
-    PSP: { __procedureState: $ObjMap<PPO, GetState<*, *, SP, *, *>> }
->(
+// eslint-disable-next-line
+
+const buildMapStateToProps = <S, OP: Object, SP: Object, PSP: { __procedureState: Object }>(
     mapStateToProps: MapStateToProps<S, OP, SP>,
-    mapProceduresToProps: MapProceduresToProps<PPO, PP>
-): MapStateToProps<S, OP, SP & PSP> => (state: S) => ({
-    ...mapStateToProps(state),
+    mapProceduresToProps: any // $FlowFixMe
+): MapStateToProps<S, OP, SP & PSP> => (state: S, ownProps: OP): SP & PSP => ({
+    ...mapStateToProps(state, ownProps),
     __procedureState: Object.keys(mapProceduresToProps).reduce(
         (all, p) => ({
             ...all,
@@ -36,18 +24,19 @@ const buildMapStateToProps = <
     ),
 });
 
-const buildMapDispatchToProps = <
-    A,
-    OP: Object,
-    DP: Object,
-    PPO: Object,
-    PP,
-    PDP: $ObjMap<PPO, ApplyDispatch<*, *, *, *, *>>
->(
-    mapDispatchToProps: MapDispatchToProps<A, OP, DP>,
-    mapProceduresToProps: MapProceduresToProps<PPO, PP>
-): MapDispatchToProps<A, OP, DP & PDP> => (dispatch: Dispatch<A>) => ({
-    ...(typeof mapDispatchToProps === 'function' ? mapDispatchToProps(dispatch) : mapDispatchToProps),
+const buildMapDispatchToProps = <OP: Object, DP: Object, PP: Object, PDP: $ObjMap<PP, ApplyDispatch<*, *, *, *, *>>>(
+    mapDispatchToProps: MapDispatchToProps<any, any, DP>,
+    mapProceduresToProps: any // $FlowFixMe
+): MapDispatchToProps<*, *, DP & PDP> => (dispatch: any, ownProps: OP) => ({
+    ...(typeof mapDispatchToProps === 'function'
+        ? mapDispatchToProps(dispatch, ownProps)
+        : Object.keys(mapDispatchToProps).reduce(
+              (all, d) => ({
+                  ...all,
+                  [d]: disp => disp(mapDispatchToProps[d]),
+              }),
+              {}
+          )),
     ...Object.keys(mapProceduresToProps).reduce(
         (all, p) => ({
             ...all,
@@ -57,21 +46,10 @@ const buildMapDispatchToProps = <
     ),
 });
 
-// const buildMergeProps = <
-//     SP: Object,
-//     DP: Object,
-//     OP: Object,
-//     PPO: Object,
-//     PP,
-//     P: Object,
-//     PSP: { __procedureState: $ObjMap<PPO, GetState> },
-//     PDP: $ObjMap<PPO, ApplyDispatch>,
-//     PMP: $ObjMap<PDP, ApplyState>
-// >(
-//     mergeProps: MergeProps<SP, DP, OP, P>,
-//     mapProceduresToProps: MapProceduresToProps<PPO, PP>
-// ) => (stateProps: SP & PSP, dispatchProps: DP & PDP, ownProps: OP): P & PMP => {
-const buildMergeProps = (mergeProps, mapProceduresToProps) => (stateProps, dispatchProps, ownProps) => {
+const buildMergeProps = <PP: Object, P: Object, PMP: $ObjMap<PP, MapToDispatcher<*>>>(
+    mergeProps: MergeProps<any, any, any, P>,
+    mapProceduresToProps: any
+) => (stateProps: any, dispatchProps: any, ownProps: any): P & PMP => {
     // eslint-disable-next-line
     const procStates = stateProps.__procedureState;
 
@@ -88,21 +66,17 @@ const buildMergeProps = (mergeProps, mapProceduresToProps) => (stateProps, dispa
         return ret;
     }, {});
 
+    // $FlowFixMe
     return { ...mergeProps(stateProps, dispatchProps, ownProps), ...procProps };
 };
 
-const connectProcedures = <
-    S,
-    OP: Object,
-    SP: Object,
-    DP: Object,
-    PPO: Object,
-    P: Object,
-    PP: { [key: $Keys<PPO>]: InferredProcedure<SP, S> }
->(
-    mapProceduresToProps: MapProceduresToProps<PPO, PP>,
+const connectProcedures = <A, S, OP: Object, SP: Object, DP: Object, P: Object, PP: Object>(
+    mapProceduresToProps: PP,
+    // $FlowFixMe
     mapStateToProps?: MapStateToProps<S, OP, SP> = () => ({}),
-    mapDispatchToProps?: MapDispatchToProps<A, OP, DP> = {},
+    // $FlowFixMe
+    mapDispatchToProps?: MapDispatchToProps<A, OP, DP> = () => ({}),
+    // $FlowFixMe
     mergeProps: MergeProps<SP, DP, OP, P> = (sp, dp, op) => ({ ...sp, ...dp, ...op }),
     options?: ConnectOptions
 ) =>
