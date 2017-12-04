@@ -1,11 +1,11 @@
 // @flow
 import type { Dispatch } from 'redux';
-import type { Procedure, ProcedureDispatcher, StatelessProcedure } from './types';
+import type { Procedure, ProcedureDispatcher } from './types';
 
-export default function prepareProcedure<AS, P: Procedure<any, *, *, AS> | StatelessProcedure<*, *>>(
+export default function prepareProcedure<S, P: Procedure<any, *, *, S>>(
     procedure: P,
     dispatch: Dispatch<any>,
-    state: AS
+    state: S
 ): ProcedureDispatcher<P> {
     const baseProc = procedure(dispatch);
 

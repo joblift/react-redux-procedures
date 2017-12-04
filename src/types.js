@@ -1,16 +1,21 @@
 // @flow
 import type { Dispatch } from 'redux';
 
-export type Procedure<S, P, R, AS> = {
-    (dispatch: Dispatch<any>): (state: S) => (params: P) => R,
-    mapStateToProcState: AS => S,
+type Proc<SP, PA, Res, S> = {
+    (dispatch: Dispatch<any>): (state: S) => (params: PA) => Res,
+    mapStateToProcState: S => SP,
 };
 
-export type StatelessProcedure<P, R> = {
-    (dispatch: Dispatch<any>): () => (params: P) => R,
-    mapStateToProcState?: any => Object,
+type StatelessProc<SP: void, PA, Res, S> = {
+    (dispatch: Dispatch<any>): (state: SP) => (params: PA) => Res,
+    mapStateToProcState?: S => SP,
 };
+
+export type Procedure<SP, PA, Res, S> = Proc<SP, PA, Res, S> | StatelessProc<SP, PA, Res, S>;
 
 // eslint-disable-next-line
-type _ProcedureDispatcher<R, P, Pr: Procedure<any, P, R, any> | StatelessProcedure<P, R>> = (params: P) => R;
-export type ProcedureDispatcher<Pr> = _ProcedureDispatcher<*, *, Pr>;
+type AppliedOnce<Res, PA, SP, S, Pr: Procedure<SP, PA, Res, S>> = (state: SP) => (params: PA) => Res;
+// eslint-disable-next-line
+type AppliedTwice<Res, PA, SP, S, Pr: Procedure<SP, PA, Res, S>> = (params: PA) => Res;
+
+export type ProcedureDispatcher<Pr> = AppliedTwice<*, *, *, *, Pr>;
