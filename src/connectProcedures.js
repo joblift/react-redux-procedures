@@ -5,11 +5,11 @@ import type { ConnectOptions, MapDispatchToProps, MapStateToProps, MergeProps } 
 import type { Dispatch } from 'redux';
 
 type InferredProcedure<SP, S> = Procedure<SP, *, *, S>;
-type GetState<Res, PA, SP, S, PR: Procedure<SP, PA, Res, S>> = PR => SP;
-type ApplyDispatch<Res, PA, SP, S, PR: Procedure<SP, PA, Res, S>> = PR => AppliedOnce<Res, PA, SP, S, Pr>;
-type ApplyState<Res, PA, SP, S, Pr: Procedure<SP, PA, Res, S>> = (
-    AppliedOnce<Res, PA, SP, S, Pr>
-) => AppliedTwice<Res, PA, SP, S, Pr>;
+type GetState<Res, PA, SP, S, Pr: Procedure<SP, PA, Res, S>> = Pr => SP;
+type ApplyDispatch<Res, PA, SP, S, Pr: Procedure<SP, PA, Res, S>> = Pr => AppliedOnce<Res, PA, SP, S, Pr>;
+// type ApplyState<Res, PA, SP, S, Pr: Procedure<SP, PA, Res, S>> = (
+// AppliedOnce<Res, PA, SP, S, Pr>
+// ) => AppliedTwice<Res, PA, SP, S, Pr>;
 // eslint-disable-next-line
 export type MapProceduresToProps<PPO, PP> = PP;
 
@@ -18,8 +18,8 @@ const buildMapStateToProps = <
     OP: Object,
     SP: Object,
     PPO: Object,
-    PP,
-    PSP: { __procedureState: $ObjMap<PPO, GetState> }
+    PP: Object,
+    PSP: { __procedureState: $ObjMap<PPO, GetState<*, *, SP, *, *>> }
 >(
     mapStateToProps: MapStateToProps<S, OP, SP>,
     mapProceduresToProps: MapProceduresToProps<PPO, PP>
@@ -36,7 +36,14 @@ const buildMapStateToProps = <
     ),
 });
 
-const buildMapDispatchToProps = <A, OP: Object, DP: Object, PPO: Object, PP, PDP: $ObjMap<PPO, ApplyDispatch>>(
+const buildMapDispatchToProps = <
+    A,
+    OP: Object,
+    DP: Object,
+    PPO: Object,
+    PP,
+    PDP: $ObjMap<PPO, ApplyDispatch<*, *, *, *, *>>
+>(
     mapDispatchToProps: MapDispatchToProps<A, OP, DP>,
     mapProceduresToProps: MapProceduresToProps<PPO, PP>
 ): MapDispatchToProps<A, OP, DP & PDP> => (dispatch: Dispatch<A>) => ({
@@ -50,20 +57,21 @@ const buildMapDispatchToProps = <A, OP: Object, DP: Object, PPO: Object, PP, PDP
     ),
 });
 
-const buildMergeProps = <
-    SP: Object,
-    DP: Object,
-    OP: Object,
-    PPO: Object,
-    PP,
-    P: Object,
-    PSP: { __procedureState: $ObjMap<PPO, GetState> },
-    PDP: $ObjMap<PPO, ApplyDispatch>,
-    PMP: $ObjMap<PDP, ApplyState>
->(
-    mergeProps: MergeProps<SP, DP, OP, P>,
-    mapProceduresToProps: MapProceduresToProps<PPO, PP>
-) => (stateProps: SP & PSP, dispatchProps: DP & PDP, ownProps: OP): P & PMP => {
+// const buildMergeProps = <
+//     SP: Object,
+//     DP: Object,
+//     OP: Object,
+//     PPO: Object,
+//     PP,
+//     P: Object,
+//     PSP: { __procedureState: $ObjMap<PPO, GetState> },
+//     PDP: $ObjMap<PPO, ApplyDispatch>,
+//     PMP: $ObjMap<PDP, ApplyState>
+// >(
+//     mergeProps: MergeProps<SP, DP, OP, P>,
+//     mapProceduresToProps: MapProceduresToProps<PPO, PP>
+// ) => (stateProps: SP & PSP, dispatchProps: DP & PDP, ownProps: OP): P & PMP => {
+const buildMergeProps = (mergeProps, mapProceduresToProps) => (stateProps, dispatchProps, ownProps) => {
     // eslint-disable-next-line
     const procStates = stateProps.__procedureState;
 

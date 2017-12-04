@@ -1,6 +1,6 @@
 // @flow
 /* :: import type { Dispatch } from 'redux' */
-import type { Procedure, StatelessProcedure } from './types';
+import type { Procedure, StatelessProc } from './types';
 
 /* ::
 declare function createProcedure<
@@ -18,7 +18,7 @@ declare function createProcedure<
 declare function createProcedure<X, P, R: Promise<X>, Pr: (dispatch: Dispatch<any>) => () => (params: P) => R>(
     procedure: Pr,
     mapStateToProps: void
-): StatelessProcedure<P, R>;
+): StatelessProc<P, R>;
 */
 
 export default function createProcedure(procedure, mapStateToProcState) {
@@ -58,7 +58,7 @@ export default function createProcedure(procedure, mapStateToProcState) {
         return proc;
     }
 
-    const proc: StatelessProcedure<*, *, *> = procedure;
+    const proc: StatelessProc<*, *, *> = procedure;
 
     return proc;
 }

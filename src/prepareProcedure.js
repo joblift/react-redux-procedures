@@ -10,9 +10,9 @@ export default function prepareProcedure<S, P: Procedure<any, *, *, S>>(
     const baseProc = procedure(dispatch);
 
     if (procedure.mapStateToProcState) {
-        // $FlowFixMe
         return baseProc(procedure.mapStateToProcState(state));
     }
 
+    // $FlowFixMe
     return baseProc();
 }

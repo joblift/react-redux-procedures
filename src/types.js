@@ -6,7 +6,7 @@ type Proc<SP, PA, Res, S> = {
     mapStateToProcState: S => SP,
 };
 
-type StatelessProc<SP: void, PA, Res, S> = {
+export type StatelessProc<SP: void, PA, Res, S> = {
     (dispatch: Dispatch<any>): (state: SP) => (params: PA) => Res,
     mapStateToProcState?: S => SP,
 };
@@ -14,8 +14,8 @@ type StatelessProc<SP: void, PA, Res, S> = {
 export type Procedure<SP, PA, Res, S> = Proc<SP, PA, Res, S> | StatelessProc<SP, PA, Res, S>;
 
 // eslint-disable-next-line
-type AppliedOnce<Res, PA, SP, S, Pr: Procedure<SP, PA, Res, S>> = (state: SP) => (params: PA) => Res;
+export type AppliedOnce<Res, PA, SP, S, Pr: Procedure<SP, PA, Res, S>> = (state: SP) => (params: PA) => Res;
 // eslint-disable-next-line
-type AppliedTwice<Res, PA, SP, S, Pr: Procedure<SP, PA, Res, S>> = (params: PA) => Res;
+export type AppliedTwice<Res, PA, SP, S, Pr: Procedure<SP, PA, Res, S>> = (params: PA) => Res;
 
 export type ProcedureDispatcher<Pr> = AppliedTwice<*, *, *, *, Pr>;
