@@ -1,5 +1,4 @@
-/* eslint-disable */
-import { connect } from "react-redux";
+import { connect } from 'react-redux';
 
 function buildMapStateToProps(mapStateToProps, mapProceduresToProps) {
     return (state, ownProps) => ({
@@ -9,36 +8,45 @@ function buildMapStateToProps(mapStateToProps, mapProceduresToProps) {
                 ...all,
                 [p]: mapProceduresToProps[p].mapStateToProcState
                     ? mapProceduresToProps[p].mapStateToProcState(state)
-                    : undefined
+                    : undefined,
             }),
             {}
-        )
+        ),
     });
 }
 
 function buildMapDispatchToProps(mapDispatchToProps, mapProceduresToProps) {
-    return (dispatch, ownProps) => ({
-        ...(typeof mapDispatchToProps === "function"
-            ? mapDispatchToProps(dispatch, ownProps)
-            : Object.keys(mapDispatchToProps).reduce(
-                  (all, d) => ({
-                      ...all,
-                      [d]: disp => disp(mapDispatchToProps[d])
-                  }),
-                  {}
-              )),
-        ...Object.keys(mapProceduresToProps).reduce(
-            (all, p) => ({
-                ...all,
-                [p]: mapProceduresToProps(dispatch)
-            }),
-            {}
-        )
-    });
+    return (dispatch, ownProps) => {
+        try {
+            return {
+                ...(typeof mapDispatchToProps === 'function'
+                    ? mapDispatchToProps(dispatch, ownProps)
+                    : Object.keys(mapDispatchToProps).reduce(
+                          (all, d) => ({
+                              ...all,
+                              [d]: disp => disp(mapDispatchToProps[d]),
+                          }),
+                          {}
+                      )),
+                ...Object.keys(mapProceduresToProps).reduce(
+                    (all, p) => ({
+                        ...all,
+                        [p]: mapProceduresToProps[p](dispatch),
+                    }),
+                    {}
+                ),
+            };
+        } catch (e) {
+            console.log('HA! ', e);
+        }
+    };
 }
 
 function buildMergeProps(mergeProps, mapProceduresToProps) {
-    return (stateProps, dispatchProps, ownProps) => {
+    return (sP, dP, ownProps) => {
+        const stateProps = { ...sP };
+        const dispatchProps = { ...dP };
+
         // eslint-disable-next-line
         const procStates = stateProps.__procedureState;
 
@@ -47,7 +55,7 @@ function buildMergeProps(mergeProps, mapProceduresToProps) {
         const procProps = Object.keys(mapProceduresToProps).reduce((all, p) => {
             const ret = {
                 ...all,
-                [p]: dispatchProps[p](procStates[p])
+                [p]: dispatchProps[p](procStates[p]),
             };
 
             delete dispatchProps[p];
