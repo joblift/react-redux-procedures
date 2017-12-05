@@ -3,9 +3,7 @@
     "version": "1.2.1",
     "description": "A wrapper for react-redux's connect to allow execution of multiple actions in a single procedure",
     "main": "dist/index.js",
-    "files": [
-        "dist"
-    ],
+    "files": ["dist"],
     "repository": "git@github.com:joblift/react-redux-procedures.git",
     "author": "remmy hume <rem@remics.net>",
     "license": "MIT",
@@ -17,6 +15,7 @@
         "babel-preset-env": "^1.6.1",
         "babel-preset-flow": "^6.23.0",
         "babel-preset-stage-0": "^6.24.1",
+        "copyfiles": "^1.2.0",
         "eslint": "^4.12.1",
         "eslint-config-joblift": "^1.0.0",
         "eslint-plugin-flowtype": "^2.34.1",
@@ -25,7 +24,6 @@
         "eslint-plugin-react": "^7.1.0",
         "eslint-plugin-sort-imports-es6-autofix": "^0.1.1",
         "flow-bin": "^0.60.1",
-        "flow-copy-source": "^1.2.1",
         "prettier": "^1.5.2",
         "react": "^16.2.0",
         "react-redux": "^5.0.6",
@@ -34,11 +32,12 @@
     "scripts": {
         "build": "npm run build:babel && npm run build:flow",
         "build:babel": "babel src -d dist",
-        "build:flow": "flow-copy-source -v src dist",
+        "build:flow": "copyfiles -f src/*.js.flow dist/",
         "prepublish": "npm run build"
     },
     "peerDependencies": {
         "react-redux": "^5.0.6",
         "redux": "^3.7.2"
-    }
+    },
+    "dependencies": {}
 }

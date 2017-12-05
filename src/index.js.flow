@@ -1,0 +1,86 @@
+// @flow
+
+// type ApplyDispatch<Res, PA, SP, S, Pr: Procedure<SP, PA, Res, S>> = Pr => AppliedOnce<Res, PA, SP, S, Pr>;
+
+import type { ConnectOptions, Connector, MapDispatchToProps, MapStateToProps, MergeProps } from 'react-redux';
+import type { Dispatch } from 'redux';
+type Proc<SP, PA, Res, S> = {
+    (dispatch: Dispatch<any>): (state: S) => (params: PA) => Res,
+    mapStateToProcState: S => SP,
+};
+
+type StatelessProc<SP: void, PA, Res, S> = {
+    (dispatch: Dispatch<any>): (state: SP) => (params: PA) => Res,
+    mapStateToProcState?: S => SP,
+};
+
+type AppliedOnce<Res, PA, SP, S, Pr: Procedure<SP, PA, Res, S>> = (state: SP) => (params: PA) => Res;
+
+type AppliedTwice<Res, PA, SP, S, Pr: Procedure<SP, PA, Res, S>> = (params: PA) => Res;
+
+export type Procedure<SP, PA, Res, S> = Proc<SP, PA, Res, S> | StatelessProc<SP, PA, Res, S>;
+
+export type ProcedureDispatcher<Pr> = AppliedTwice<*, *, *, *, Pr>;
+
+type MapToDispatcher<Pr: Procedure<*, *, *, *>> = (Pr) => ProcedureDispatcher<Pr>;
+
+export function createProcedure<
+    AS,
+    X,
+    S,
+    P,
+    R: Promise<X>,
+    Pr: (dispatch: Dispatch<any>) => (state: S) => (params: P) => R
+>(
+    procedure: Pr,
+    mapStateToProps: (state: AS) => S
+): Procedure<S, P, R, AS>;
+
+// eslint-disable-next-line
+export function createProcedure<X, P, R: Promise<X>, Pr: (dispatch: Dispatch<any>) => () => (params: P) => R>(
+    procedure: Pr,
+    mapStateToProps: void
+): Procedure<void, P, R, void>;
+
+export function connectProcedures<
+    A,
+    S,
+    OP: Object,
+    SP: Object,
+    DP: Object,
+    P: Object,
+    PP: Object,
+    PMP: $ObjMap<PP, MapToDispatcher<*>>
+>(
+    mapProceduresToProps: PP,
+    mapStateToProps: MapStateToProps<S, OP, SP>,
+    mapDispatchToProps: MapDispatchToProps<A, OP, DP>,
+    mergeProps: MergeProps<SP, DP, OP, P>,
+    options?: ConnectOptions
+): Connector<OP, P & PMP>;
+
+export function prepareProcedure<S, P: Procedure<any, *, *, S>>(
+    procedure: P,
+    dispatch: Dispatch<any>,
+    state: S
+): ProcedureDispatcher<P>;
+
+// declare function buildMergeProps<OP: Object, PP: Object, P: Object, PMP: $ObjMap<PP, MapToDispatcher<*>>>(
+//     mergeProps: MergeProps<any, any, OP, P>,
+//     mapProceduresToProps: PP
+// ): MergeProps<Object, Object, OP, P & PMP>;
+//
+// declare function buildMapDispatchToProps<
+//     OP: Object,
+//     DP: Object,
+//     PP: Object,
+//     PDP: $ObjMap<PP, ApplyDispatch<*, *, *, *, *>>
+// >(
+//     MapDispatchToProps: MapDispatchToProps<any, any, DP>,
+//     mapProceduresToProps: PP
+// ): MapDispatchToProps<*, OP, DP & PDP>;
+//
+// declare function buildMapStateToProps<OP: Object, SP: Object, PSP: { __procedureState: Object }>(
+//     mapStateToProps: MapStateToProps<any, OP, SP>,
+//     mapProceduresToProps: any
+// ): MapStateToProps<any, OP, SP & PSP>;
