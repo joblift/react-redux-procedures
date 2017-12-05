@@ -16,30 +16,24 @@ function buildMapStateToProps(mapStateToProps, mapProceduresToProps) {
 }
 
 function buildMapDispatchToProps(mapDispatchToProps, mapProceduresToProps) {
-    return (dispatch, ownProps) => {
-        try {
-            return {
-                ...(typeof mapDispatchToProps === 'function'
-                    ? mapDispatchToProps(dispatch, ownProps)
-                    : Object.keys(mapDispatchToProps).reduce(
-                          (all, d) => ({
-                              ...all,
-                              [d]: disp => disp(mapDispatchToProps[d]),
-                          }),
-                          {}
-                      )),
-                ...Object.keys(mapProceduresToProps).reduce(
-                    (all, p) => ({
-                        ...all,
-                        [p]: mapProceduresToProps[p](dispatch),
-                    }),
-                    {}
-                ),
-            };
-        } catch (e) {
-            console.log('HA! ', e);
-        }
-    };
+    return (dispatch, ownProps) => ({
+        ...(typeof mapDispatchToProps === 'function'
+            ? mapDispatchToProps(dispatch, ownProps)
+            : Object.keys(mapDispatchToProps).reduce(
+                  (all, d) => ({
+                      ...all,
+                      [d]: disp => disp(mapDispatchToProps[d]),
+                  }),
+                  {}
+              )),
+        ...Object.keys(mapProceduresToProps).reduce(
+            (all, p) => ({
+                ...all,
+                [p]: mapProceduresToProps[p](dispatch),
+            }),
+            {}
+        ),
+    });
 }
 
 function buildMergeProps(mergeProps, mapProceduresToProps) {
