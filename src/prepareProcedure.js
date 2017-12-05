@@ -1,16 +1,7 @@
-// @flow
-import type { Dispatch } from 'redux';
-import type { Procedure, ProcedureDispatcher, StatelessProcedure } from './types';
-
-export default function prepareProcedure<AS, P: Procedure<any, *, *, AS> | StatelessProcedure<*, *>>(
-    procedure: P,
-    dispatch: Dispatch<any>,
-    state: AS
-): ProcedureDispatcher<P> {
+export default function prepareProcedure(procedure, dispatch, state) {
     const baseProc = procedure(dispatch);
 
     if (procedure.mapStateToProcState) {
-        // $FlowFixMe
         return baseProc(procedure.mapStateToProcState(state));
     }
 
