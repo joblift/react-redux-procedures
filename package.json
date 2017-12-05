@@ -3,7 +3,9 @@
     "version": "1.2.1",
     "description": "A wrapper for react-redux's connect to allow execution of multiple actions in a single procedure",
     "main": "dist/index.js",
-    "files": ["dist"],
+    "files": [
+        "dist"
+    ],
     "repository": "git@github.com:joblift/react-redux-procedures.git",
     "author": "remmy hume <rem@remics.net>",
     "license": "MIT",
@@ -27,10 +29,12 @@
         "prettier": "^1.5.2",
         "react": "^16.2.0",
         "react-redux": "^5.0.6",
-        "redux": "^3.7.2"
+        "redux": "^3.7.2",
+        "rimraf": "^2.6.2"
     },
     "scripts": {
-        "build": "npm run build:babel && npm run build:flow",
+        "clean": "rimraf dist",
+        "build": "npm run clean && npm run build:babel && npm run build:flow",
         "build:babel": "babel src -d dist",
         "build:flow": "copyfiles -f src/*.js.flow dist/",
         "prepublish": "npm run build"

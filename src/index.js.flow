@@ -24,7 +24,7 @@ export type ProcedureDispatcher<Pr> = AppliedTwice<*, *, *, *, Pr>;
 
 type MapToDispatcher<Pr: Procedure<*, *, *, *>> = (Pr) => ProcedureDispatcher<Pr>;
 
-export function createProcedure<
+declare export function createProcedure<
     AS,
     X,
     S,
@@ -37,12 +37,12 @@ export function createProcedure<
 ): Procedure<S, P, R, AS>;
 
 // eslint-disable-next-line
-export function createProcedure<X, P, R: Promise<X>, Pr: (dispatch: Dispatch<any>) => () => (params: P) => R>(
+declare export function createProcedure<X, P, R: Promise<X>, Pr: (dispatch: Dispatch<any>) => () => (params: P) => R>(
     procedure: Pr,
     mapStateToProps: void
 ): Procedure<void, P, R, void>;
 
-export function connectProcedures<
+declare export function connectProcedures<
     A,
     S,
     OP: Object,
@@ -59,7 +59,7 @@ export function connectProcedures<
     options?: ConnectOptions
 ): Connector<OP, P & PMP>;
 
-export function prepareProcedure<S, P: Procedure<any, *, *, S>>(
+declare export function prepareProcedure<S, P: Procedure<any, *, *, S>>(
     procedure: P,
     dispatch: Dispatch<any>,
     state: S
