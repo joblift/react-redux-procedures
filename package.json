@@ -34,7 +34,7 @@
     },
     "scripts": {
         "clean": "rimraf dist",
-        "build": "npm run clean && npm run build:babel && npm run build:flow",
+        "build": "npm run clean && npm run build:babel",
         "build:babel": "babel src -d dist",
         "build:flow": "copyfiles -f src/*.js.flow dist/",
         "prepublish": "npm run build"
