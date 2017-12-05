@@ -38,7 +38,16 @@ IMPORTANT: Don't forget that the state is already bound when you call the proced
 dispatching actions internally and may have already changed when you reach a promise result. Procedures should only be
 dependent on the state at the begin of the procedure.
 
-`connectProcedures`
+```
+connectProcedures(
+    mapProceduresToProps: { [key]: Procedure },
+    mapStateToProps?,
+    mapDispatchToProps?,
+    mergeProps?,
+    options?
+)
+```
+The optional Arguments are just your [standard connect arguments](https://github.com/reactjs/react-redux/blob/master/docs/api.md#connectmapstatetoprops-mapdispatchtoprops-mergeprops-options) that will get applied by connectProcedures so you don't have to wrap a component in connectProcedures and a standard connect as well.
 
 ```typescript
 // component file
@@ -59,14 +68,14 @@ const mapProceduresToProps = {
 export default connectProcedures(mapProceduresToProps)(Component);
 ```
 
-`prepareProcedure`
+`prepareProcedure(Procedure, Dispatch, State)`
 
 ```typescript
 // file where you need to call a procedure manually
 import { prepareProcedure } from "react-redux-procedures";
 import { someImportedProcedure } from "somewhere";
 
-const prepared = prepareProcedure(someImportedProcedure, reduxStore.getStore(), reduxStore.dispatch);
+const prepared = prepareProcedure(someImportedProcedure, reduxStore.dispatch, reduxStore.getState());
 
 prepared(/* params */);
 ```
