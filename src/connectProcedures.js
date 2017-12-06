@@ -22,7 +22,7 @@ function buildMapDispatchToProps(mapDispatchToProps, mapProceduresToProps) {
             : Object.keys(mapDispatchToProps).reduce(
                   (all, d) => ({
                       ...all,
-                      [d]: disp => disp(mapDispatchToProps[d]),
+                      [d]: (...args) => dispatch(mapDispatchToProps[d](...args)),
                   }),
                   {}
               )),
